@@ -59,13 +59,6 @@ passport.use(new TwitterStrategy({
     }
 ));
 
-app.get('/', function(req, res, next) {
-    res.render('index', {
-        title: 'Express',
-        user: req.user
-    });
-});
-
 app.get('/account', ensureAuthenticated, function(req, res){
     res.render('account', { user: req.user });
 });
@@ -94,6 +87,12 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login')
 }
+
+
+app.use(function (req, res, next) {
+    res.locals.user = req.user;
+    next()
+});
 
 app.use('/', routes);
 app.use('/users', users);
