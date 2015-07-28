@@ -10,6 +10,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var passport = require('passport');
 var TwitterStrategy = require('passport-twitter').Strategy;
+var unirest = require('unirest');
+var plainText = 'everything is awesome';
 
 var app = express();
 
@@ -59,13 +61,13 @@ passport.use(new TwitterStrategy({
     }
 ));
 
-app.get('/account', ensureAuthenticated, function(req, res){
-    res.render('account', { user: req.user });
-});
+//app.get('/account', ensureAuthenticated, function(req, res){
+//    res.render('account', { user: req.user });
+//});
 
-app.get('/login', function(req, res){
-    res.render('login', { user: req.user });
-});
+//app.get('/login', function(req, res){
+//    res.render('login', { user: req.user });
+//});
 
 app.get('/auth/twitter',
     passport.authenticate('twitter'),
@@ -83,15 +85,23 @@ app.get('/logout', function(req, res){
     res.redirect('/');
 });
 
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-    res.redirect('/login')
-}
-
+//function ensureAuthenticated(req, res, next) {
+//    if (req.isAuthenticated()) { return next(); }
+//    res.redirect('/login')
+//}
 
 app.use(function (req, res, next) {
     res.locals.user = req.user;
     next()
+});
+
+app.get('/journal', function(req, res) {
+    unirest.get('https://api.dandelion.eu/datatxt/sent/v1/?lang=en&text=' + plainText + '&$app_id='
+        + process.env.DANDELION_API_ID + '&$app_key=' + process.env.DANDELION_API_KEY)
+        .end(function (response) {
+            console.log(response.body);
+        });
+    res.end();
 });
 
 app.use('/', routes);
