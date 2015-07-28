@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: 'keyboard cat',
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
@@ -34,35 +34,45 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user)
+});
+
 passport.use(new TwitterStrategy({
         consumerKey: process.env.TWITTER_CONSUMER_KEY,
         consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-        callbackURL: process.env.HOST + "/auth/twitter/callback"
+        callbackURL: process.env.HOST + "/auth/twitter/callback",
+        state: true
     },
     function(token, tokenSecret, profile, done) {
         process.nextTick(function () {
-
             // To keep the example simple, the user's Twitter profile is returned to
             // represent the logged-in user.  In a typical application, you would want
             // to associate the Twitter account with a user record in your database,
             // and return that user instead.
-            return done(null, profile);
+            return done(null, {id: profile.id, displayName: profile.displayName});
         });
     }
 ));
 
+app.get('/', function(req, res, next) {
+    res.render('index', {
+        title: 'Express',
+        user: req.user
+    });
+});
 
-//app.get('/', function(req, res){
-//    res.render('index', { user: req.user });
-//});
-//
-//app.get('/account', ensureAuthenticated, function(req, res){
-//    res.render('account', { user: req.user });
-//});
+app.get('/account', ensureAuthenticated, function(req, res){
+    res.render('account', { user: req.user });
+});
 
-//app.get('/login', function(req, res){
-//    res.render('login', { user: req.user });
-//});
+app.get('/login', function(req, res){
+    res.render('login', { user: req.user });
+});
 
 app.get('/auth/twitter',
     passport.authenticate('twitter'),
@@ -75,24 +85,15 @@ app.get('/auth/twitter/callback',
         res.redirect('/');
     });
 
-//app.get('/logout', function(req, res){
-//    req.logout();
-//    res.redirect('/');
-//});
-
-//function ensureAuthenticated(req, res, next) {
-//    if (req.isAuthenticated()) { return next(); }
-//    res.redirect('/login')
-//}
-
-
-passport.serializeUser(function(user, done) {
-    done(null, user);
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
 });
 
-passport.deserializeUser(function(user, done) {
-    done(null, user)
-});
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) { return next(); }
+    res.redirect('/login')
+}
 
 app.use('/', routes);
 app.use('/users', users);
