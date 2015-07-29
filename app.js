@@ -11,7 +11,7 @@ var users = require('./routes/users');
 var passport = require('passport');
 var TwitterStrategy = require('passport-twitter').Strategy;
 
-var db = require('monk')(process.env.MONGOLAB_URI);
+var db = require('monk')(process.env.LOCALHOST || process.env.MONGOLAB_URI);
 var aUser = db.get('users');
 
 var app = express();
