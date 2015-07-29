@@ -10,8 +10,9 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var passport = require('passport');
 var TwitterStrategy = require('passport-twitter').Strategy;
-var unirest = require('unirest');
-var plainText = 'everything is awesome';
+
+var db = require('monk')(process.env.MONGOLAB_URI);
+var aUser = db.get('users');
 
 var app = express();
 
@@ -85,21 +86,48 @@ app.get('/auth/twitter',
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', { failureRedirect: '/login' }),
     function(req, res) {
-        res.redirect('/');
-    });
+        var user = JSON.stringify(req.user);
+            aUser.findOne({
+                _id: user.id
+            }, function(doc) {
+                console.log('trying to find one!');
+                var user = JSON.stringify(req.user);
+                if (doc && user.id === doc.id) {
+                    //req.session.put(user.id, doc.id);
+                    console.log(user.id);
+                    console.log(doc.id);
+                    console.log('found an existing user!');
+                    res.redirect('/');
+                } else {
+                    console.log('going to insert a user');
+                    console.log(user);
+                    console.log(JSON.stringify(req.user.id));
+                    console.log(JSON.stringify(req.user.displayName));
+                    aUser.insert({_id: parseInt(req.user.id), 'displayName': req.user.displayName, 'entry': []});
+                    console.log('inserted a user');
+                        //req.session.put(user.id, doc.id);
+                        res.redirect('/')
+                }
+            });
+
+        //{
+        //    _id: req.params.id
+        //}
+        //if (JSON.stringify(req.user.id) === aUser.findOne({_id: JSON.stringify(req.user.id)})) {
+        //    console.log('found an existing user!');
+        //    res.redirect('/');
+        //} else {
+        //    aUser.insert({
+        //        _id: JSON.stringify(req.user.id),
+        //        'displayName': JSON.stringify(req.user.displayName),
+        //        'entry': []
+        //    });
+        }
+    );
 
 app.use(function (req, res, next) {
     res.locals.user = req.user;
     next()
-});
-
-app.get('/journal', function(req, res) {
-    unirest.get('https://api.dandelion.eu/datatxt/sent/v1/?lang=en&text=' + plainText + '&$app_id='
-        + process.env.DANDELION_API_ID + '&$app_key=' + process.env.DANDELION_API_KEY)
-        .end(function (response) {
-            console.log(response.body);
-        });
-    res.end();
 });
 
 app.get('/logout', function(req, res) {
