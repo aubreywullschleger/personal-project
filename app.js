@@ -3,8 +3,8 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var session = require('express-session');
 var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -15,10 +15,17 @@ var plainText = 'everything is awesome';
 
 var app = express();
 
+
 app.set('trust proxy', 1);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+app.use(cookieSession({
+    name: 'session',
+    keys: [process.env.SECRET1, process.env.SECRET2]
+}));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -27,12 +34,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
+//app.use(cookieSession({
+//    secret: process.env.SECRET,
+//    resave: false,
+//    saveUninitialized: true,
+//    cookie: { secure: false }
+//}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,14 +69,6 @@ passport.use(new TwitterStrategy({
     }
 ));
 
-//app.get('/account', ensureAuthenticated, function(req, res){
-//    res.render('account', { user: req.user });
-//});
-
-//app.get('/login', function(req, res){
-//    res.render('login', { user: req.user });
-//});
-
 app.get('/auth/twitter',
     passport.authenticate('twitter'),
     function(req, res){
@@ -79,16 +79,6 @@ app.get('/auth/twitter/callback',
     function(req, res) {
         res.redirect('/');
     });
-
-app.get('/logout', function(req, res){
-    req.logout();
-    res.redirect('/');
-});
-
-//function ensureAuthenticated(req, res, next) {
-//    if (req.isAuthenticated()) { return next(); }
-//    res.redirect('/login')
-//}
 
 app.use(function (req, res, next) {
     res.locals.user = req.user;
