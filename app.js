@@ -4,7 +4,7 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -22,17 +22,10 @@ app.set('trust proxy', 1);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-app.use(cookieSession({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
-
-app.use(cookieSession({
-    name: 'session',
-    keys: [process.env.SECRET1, process.env.SECRET2]
-}));
+//app.use(cookieSession({
+//    name: 'session',
+//    keys: [process.env.SECRET1, process.env.SECRET2]
+//}));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -41,6 +34,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
 //app.use(cookieSession({
 //    secret: process.env.SECRET,
 //    resave: false,
