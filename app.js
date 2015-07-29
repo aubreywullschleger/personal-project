@@ -24,7 +24,8 @@ app.set('view engine', 'hbs');
 
 app.use(cookieSession({
     name: 'session',
-    keys: [process.env.SECRET1, process.env.SECRET2]
+    keys: [process.env.SECRET1, process.env.SECRET2],
+    secure: false
 }));
 
 // uncomment after placing your favicon in /public
