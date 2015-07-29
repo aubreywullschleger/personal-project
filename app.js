@@ -102,6 +102,12 @@ app.get('/journal', function(req, res) {
     res.end();
 });
 
+app.get('/logout', function(req, res) {
+    req.session = null;
+    req.logout();
+    res.redirect('/');
+});
+
 app.use('/', routes);
 app.use('/users', users);
 
