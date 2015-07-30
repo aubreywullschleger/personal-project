@@ -10,8 +10,12 @@
               Hello, {{user.displayName}}
               |
               <a href="/new">go write something!</a>
+              <a href="/graph">show graph!</a>
               <a href="/logout">Logout</a>
           </p>
+          <form action="/delete" method="post">
+              <input type="submit" value="delete"/>
+          </form>
       {{else}}
           <p>
               <a href="/auth/twitter">Login</a>

@@ -9,17 +9,14 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var entries = require('./routes/new');
+var graph = require('./routes/graph');
 var passport = require('passport');
 var TwitterStrategy = require('passport-twitter').Strategy;
-
-var unirest = require('unirest');
 
 var db = require('monk')(process.env.MONGOLAB_URI);
 var aUser = db.get('users');
 
-
 var app = express();
-
 
 app.set('trust proxy', 1);
 
@@ -42,16 +39,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
     secret: process.env.SECRET,
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: {secure: false}
 }));
 
-//app.use(cookieSession({
-//    secret: process.env.SECRET,
-//    resave: false,
-//    saveUninitialized: true
-//}));
+//app.use(function(req, res, next) {
+//    //req.session.cookie.expires = false;
+//    req.session.save(function(err) {
+//        // session saved
+//    });
+//    res.end();
+//});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -97,7 +96,12 @@ app.get('/auth/twitter/callback',
             if (doc && user.id === doc.id) {
                 res.redirect('/');
             } else {
-                aUser.insert({_id: parseInt(req.user.id), 'displayName': req.user.displayName, 'entry': [], 'score': []});
+                aUser.insert({
+                    _id: parseInt(req.user.id),
+                    'displayName': req.user.displayName,
+                    'entry': [],
+                    'score': []
+                });
                 res.redirect('/')
             }
         });
@@ -110,60 +114,48 @@ app.use(function (req, res, next) {
 });
 
 app.get('/logout', function (req, res) {
-    req.session = null;
+    req.session.destroy(function(err) {
+        // cannot access session here
+    });
     req.logout();
     res.redirect('/');
 });
 
-app.get('/new', function (req, res) {
-    res.render('new')
-});
-
-app.post('/new', function (req, res) {
-    aUser.update({_id: parseInt(req.user.id)}, {$push: {entry: req.body.entry}});
-    if(req.isAuthenticated()){
-        unirest.get('https://api.dandelion.eu/datatxt/sent/v1/?lang=en&text=' + req.body.entry + '&$app_id='
-            + process.env.DANDELION_API_ID + '&$app_key=' + process.env.DANDELION_API_KEY)
-            .end(function (response) {
-                aUser.update({_id: parseInt(req.user.id)}, {$push: {score: response.body.sentiment.score}});
-        })
-    } res.redirect('/')
-});
-
-    app.use('/', routes);
-    //app.use('/new', entries);
-    app.use('/users', users);
+app.use('/', routes);
+app.use('/users', users);
+app.use('/new', entries);
+app.use('/graph', graph);
 
 // catch 404 and forward to error handler
-    app.use(function (req, res, next) {
-        var err = new Error('Not Found');
-        err.status = 404;
-        next(err);
-    });
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
 
 // error handlers
 
 // development error handler
 // will print stacktrace
-    if (app.get('env') === 'development') {
-        app.use(function (err, req, res, next) {
-            res.status(err.status || 500);
-            res.render('error', {
-                message: err.message,
-                error: err
-            });
-        });
-    }
-
-// production error handler
-// no stacktraces leaked to user
+if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
-            error: {}
+            error: err
         });
     });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
 
 
-    module.exports = app;
+module.exports = app;
