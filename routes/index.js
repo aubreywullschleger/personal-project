@@ -1,14 +1,13 @@
 require('dotenv').load();
 var express = require('express');
 var router = express.Router();
-var unirest = require('unirest');
 var db = require('monk')(process.env.MONGOLAB_URI);
 var users = db.get('users');
 var plainText = 'everything is awesome';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', {title: 'Express'});
+  res.render('index', {title: 'Mood Tracker'});
 });
 
 //router.get('/journal', function(req, res, next) {
