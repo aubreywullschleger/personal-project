@@ -125,6 +125,9 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/new', entries);
 app.use('/graph', graph);
+app.get('/styleguide', function(req, res){
+    res.render('styleguide');
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

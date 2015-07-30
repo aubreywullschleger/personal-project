@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-      {{#if user}}
-          <p>
-              Hello, {{user.displayName}}
-              |
-              <a href="/new">go write something!</a>
-              <a href="/graph">show graph!</a>
-              <a href="/logout">Logout</a>
-          </p>
-          <form action="/delete" method="post">
-              <input type="submit" value="delete"/>
-          </form>
-      {{else}}
-          <p>
-              <a href="/auth/twitter">Login</a>
-          </p>
-      {{/if}}
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+</head>
+<body>
+<main class="main">
+    {{#if user}}
+        <p>
+            hello, {{user.displayName}}
+        </p>
+        <a href="/new">write something</a>
+        <a href="/graph">mood graph</a>
+        <a href="/logout">logout</a>
+        <form action="/delete" method="post">
+            <input type="submit" value="delete account"/>
+        </form>
+    {{else}}
+        <p>
+            <a href="/auth/twitter">login</a>
+        </p>
+    {{/if}}
     {{{body}}}
-  </body>
+</main>
+</body>
 </html>

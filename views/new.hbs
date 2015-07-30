@@ -1,10 +1,10 @@
 {{#if user}}
 <form action="/new" method="post">
-    <textarea name='entry' id='entry' placeholder="new journal entry"></textarea>
-    <input type="submit" value="insert new entry"/>
+    <textarea name='entry' id='entry' placeholder="how's it going?"></textarea>
+    <input type="submit" value="submit"/>
 </form>
 {{else}}
     <p>
-        <a href="/auth/twitter">Login</a>
+        <a href="/auth/twitter">login</a>
     </p>
 {{/if}}

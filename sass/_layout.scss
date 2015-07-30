@@ -1,0 +1,23 @@
+.main {
+  max-width: 800px;
+  height: 1200px;
+  padding: 20px;
+  margin: 0 auto;
+  background: $white;
+}
+
+textarea {
+  float: left;
+  clear: both;
+  width: 50%;
+  height: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border: 1px solid $ltgray;
+}
+
+div {
+  margin: 0 auto;
+  width: 80%;
+}

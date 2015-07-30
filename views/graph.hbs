@@ -1,6 +1,6 @@
 {{#if user}}
- <head>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
         <style>
             /* tell the SVG path to be a thin blue line without any area fill */
             path {
@@ -31,11 +31,12 @@
             }
         </style>
     </head>
-    <div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left; margin-top:100px;"></div>
-<p id="graphScore">{{score}}</p>
- <script src="/javascripts/graph.js"></script>
+    <!--<a href="/exercises">self reflection exercises</a>-->
+    <div id="graph" class="aGraph" style="float:left; margin-top: 25px;"></div>
+    <p id="graphScore">{{score}}</p>
+    <script src="/javascripts/graph.js"></script>
 {{else}}
     <p>
-        <a href="/auth/twitter">Login</a>
+        <a href="/auth/twitter">login</a>
     </p>
-    {{/if}}
+{{/if}}

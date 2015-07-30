@@ -1,0 +1,70 @@
+html {
+  font-size: 1em;
+}
+
+body {
+  background-color: $white;
+  font-family: 'Poppins', sans;
+  font-weight: 400;
+  line-height: 1.45;
+  color: $black;
+}
+
+p {
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  font-weight: 300;
+  padding: 10px;
+}
+
+h1, h2, h3, h4 {
+  margin: 1.414em 0 0.5em;
+  font-weight: inherit;
+  line-height: 1.2;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 3.998em;
+}
+
+h2 {
+  font-size: 2.827em;
+}
+
+h3 {
+  font-size: 1.999em;
+  margin: 0 auto;
+  padding: 20px;
+  float: left;
+  clear: both;
+}
+
+h4, p {
+  font-size: 1.414em;
+}
+
+small, .font_small {
+  font-size: 0.707em;
+}
+
+a {
+  width: 25%;
+  color: $white;
+  background: $purple;
+  text-decoration: none;
+  font-weight: 300;
+  border: 1px solid $purple;
+  margin-bottom: 20px;
+  border-radius: 3px;
+  padding: 10px;
+  transition: 200ms ease all;
+}
+
+a:hover {
+  color: $black;
+  background: $gray;
+  border: $gray;
+}
